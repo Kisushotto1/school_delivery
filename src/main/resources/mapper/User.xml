@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shelbourne.schooldelivery.mapper.UserMapper">
+    <!--    用户更新-->
+    <update id="update">-- 这里的id为函数名
+        update user
+        <set>
+            <if test="username != null and username !=''">
+                username=#{username},
+            </if>
+            <if test="nickname != null and nickname !=''">
+                nickname=#{nickname},
+            </if>
+            <if test="email != null and email !=''">
+                email=#{email},
+            </if>
+            <if test="phone != null and phone !=''">
+                phone=#{phone},
+            </if>
+            <if test="address != null and address !=''">
+                address=#{address}
+            </if>
+            <if test="avatar != null and avatar != ''">
+                avatar_url=#{avatar}
+            </if>
+        </set>
+        <where>
+            id = #{id}
+        </where>
+    </update>
+
+    <!--    分页+条件查询-->
+    <select id="selectPageWithParam" resultType="com.shelbourne.schooldelivery.entity.User">
+        select * from user
+        <include refid="condition"></include>
+        limit #{startIdx},#{size}
+    </select>
+
+    <!--    查询满足条件的用户总数-->
+    <select id="selectTotalWithParam" resultType="java.lang.Integer">
+        select count(*) from user
+        <include refid="condition"></include>
+    </select>
+
+    <!--    查询条件-->
+    <sql id="condition">
+        <where>
+            1=1
+            <if test="username != null and username != ''">
+                and username like concat("%",#{username},"%")
+            </if>
+            <if test="email != null and email != ''">
+                and email like concat("%",#{email},"%")
+            </if>
+            <if test="address != null and address != ''">
+                and address like concat("%",#{address},"%")
+            </if>
+        </where>
+    </sql>
+</mapper>

@@ -1,0 +1,20 @@
+#设置端口号
+server:
+  port: 9090
+#配置数据库驱动
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    #配置服务器时区，北京时间=格林威治时间+8小时，这里的%2b为“+”
+    url: jdbc:mysql://localhost:3306/school_delivery?serverTimezone=GMT%2b8
+    username: root
+    password: 123456
+#集成swagger2.6.3及以上版本需要加上
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
