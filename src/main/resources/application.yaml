@@ -9,7 +9,7 @@ spring:
     url: jdbc:mysql://localhost:3306/school_delivery?serverTimezone=GMT%2b8
     username: root
     password: 123456
-#集成swagger2.6.3及以上版本需要加上
+  #集成swagger2.6.3及以上版本需要加上
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
@@ -18,3 +18,7 @@ mybatis-plus:
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
+files:
+  upload:
+    #    注意冒号空格，注意斜杠数量
+    path: D:/study/school_delivery/files/

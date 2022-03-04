@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@MapperScan("com.shelbourne.schooldelivery.mapper")
+@MapperScan("com.shelbourne.schooldelivery.mapper")  //之后就不用在每个mapper上加@mapper注解了
 public class MybatisPlusConfig {
     @Bean  //将MybatisPlusInterceptor对象注入Springboot容器
     public MybatisPlusInterceptor mybatisPlusInterceptor() {
