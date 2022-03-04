@@ -11,7 +11,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 
 import javax.annotation.Resource;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import com.shelbourne.schooldelivery.service.IFileService;
@@ -97,7 +100,8 @@ public class FileController {
         }
         //定义文件唯一标识码
         String uuid = IdUtil.fastSimpleUUID();
-        java.io.File storageFile = new java.io.File(fileUploadPath + uuid + StrUtil.DOT + type);
+        String fileUuid = uuid + StrUtil.DOT + type;
+        java.io.File storageFile = new java.io.File(fileUploadPath + fileUuid);
         //把获取的文件存储到目录
         try {
             file.transferTo(storageFile);
@@ -105,7 +109,7 @@ public class FileController {
             System.out.println("文件存储失败！");
             e.printStackTrace();
         }
-        String url = "http:localhost:9090/" + uuid;
+        String url = "http:localhost:9090/" + fileUuid;
 
         //存储到数据库
         File saveFile = new File();
@@ -117,10 +121,17 @@ public class FileController {
         return url;
     }
 
-    @GetMapping("/download/{uuid}")
-    public void download(@PathVariable String uuid){
+    @GetMapping("/download/{fileUuid}")
+    public void download(@PathVariable String fileUuid, HttpServletResponse response) throws IOException {
+        java.io.File file = new java.io.File(fileUploadPath + fileUuid);//获取文件流
+        ServletOutputStream os = response.getOutputStream();
+        response.addHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileUuid, "UTF-8"));
+        response.setContentType("application/octet-stream");
 
+//        把服务器端的文件写入response
+        os.write(FileUtil.readBytes(file));
+        os.flush();
+        os.close();
     }
-
 }
 
