@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.stream.StreamUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
@@ -102,25 +103,33 @@ public class FileController {
         String uuid = IdUtil.fastSimpleUUID();
         String fileUuid = uuid + StrUtil.DOT + type;
         java.io.File storageFile = new java.io.File(fileUploadPath + fileUuid);
-        //把获取的文件存储到目录
+
+        //把获取的文件存储到磁盘
         try {
             file.transferTo(storageFile);
         } catch (IOException e) {
             System.out.println("文件存储失败！");
             e.printStackTrace();
         }
-        String url = "http:localhost:9090/" + fileUuid;
+        String url = "http:localhost:9090/file/download/" + fileUuid;
 
         //存储到数据库
         File saveFile = new File();
         saveFile.setName(originalFilename);
         saveFile.setType(type);
-        saveFile.setSize(size);
+        saveFile.setSize(size / 1024);
         saveFile.setUrl(url);
         fileService.save(saveFile);
         return url;
     }
 
+    /**
+     * 文件下载路径：http:localhost:9090/file/download/xxx
+     *
+     * @param fileUuid
+     * @param response
+     * @throws IOException
+     */
     @GetMapping("/download/{fileUuid}")
     public void download(@PathVariable String fileUuid, HttpServletResponse response) throws IOException {
         java.io.File file = new java.io.File(fileUploadPath + fileUuid);//获取文件流

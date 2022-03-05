@@ -1,0 +1,95 @@
+package ${package.Controller};
+
+##导入通用包
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.web.bind.annotation.*;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+
+import javax.annotation.Resource;
+import java.util.List;
+
+##导入实体类包
+import $!{package.Service}.$!{table.serviceName};
+import ${package.Entity}.${entity};
+
+
+#if(${restControllerStyle})
+import org.springframework.web.bind.annotation.RestController;
+#else
+import org.springframework.stereotype.Controller;
+#end
+#if(${superControllerClassPackage})
+import ${superControllerClassPackage};
+#end
+
+/**
+ * <p>
+ * $!{table.comment} 前端控制器
+ * </p>
+ *
+ * @author ${author}
+ * @since ${date}
+ */
+#if(${restControllerStyle})
+@RestController
+#else
+@Controller
+#end
+@RequestMapping("#if(${package.ModuleName})/${package.ModuleName}#end/#if(${controllerMappingHyphenStyle})${controllerMappingHyphen}#else${table.entityPath}#end" )
+#if(${kotlin})
+class ${table.controllerName}#if(${superControllerClass}) : ${superControllerClass}()#end
+
+#else
+
+#if(${superControllerClass})
+public class ${table.controllerName} extends ${superControllerClass} {
+#else
+public class ${table.controllerName} {
+#end
+    @Resource
+    private ${table.serviceName} ${table.entityPath}Service;
+
+    //查询所有
+    @GetMapping
+    public List<${entity}> findAll() {
+        return ${table.entityPath}Service.list();
+    }
+
+    //新增或删除接口
+    @PostMapping
+    public boolean save(@RequestBody ${entity} ${table.entityPath}){
+        return ${table.entityPath}Service.saveOrUpdate(${table.entityPath});
+    }
+
+    //删除请求接口
+    @DeleteMapping("/{id}")
+    public boolean delete(@PathVariable Integer id) {//这里的“id”必须和DeleteMapping里面的名字一样
+        return ${table.entityPath}Service.removeById(id);
+    }
+
+    //批量删除请求接口
+    @PostMapping("/batchDel")
+    public boolean deleteBatch(@RequestBody List<Integer> ids) {//这里的“id”必须和DeleteMapping里面的名字一样
+        return ${table.entityPath}Service.removeBatchByIds(ids);
+    }
+
+    //简单条件+分页查询
+    @GetMapping("/page")
+    public IPage<${entity}> findPage(
+    @RequestParam Integer pageNum,
+    @RequestParam Integer pageSize,
+    @RequestParam(defaultValue = "") String ${table.entityPath}name) {
+        IPage<${entity}> page = new Page<>(pageNum, pageSize);
+        QueryWrapper<${entity}> queryWrapper = new QueryWrapper<>();
+
+        if (!"".equals(${table.entityPath}name)) {//加条件判断可以查询null值
+            queryWrapper.like("${table.entityPath}name", ${table.entityPath}name);
+        }
+
+        queryWrapper.orderByDesc("id");
+        return ${table.entityPath}Service.page(page, queryWrapper);
+    }
+}
+
+#end
